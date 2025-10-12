@@ -30,8 +30,12 @@ public partial class Coin : Area2D
 		QueueFree();
 	}
 
-	public void OnBodyEntered(Area2D other)
-    {
-		GD.Print("Entrou no outro!");
-    }
+	public void OnAreaEntered(Area2D other)
+	{
+		if (other.IsInGroup("enemy_hitbox"))
+		{
+			other.GetParent().CallDeferred("Die"); // Supondo que o Slime tenha um método Die()
+			QueueFree();
+		}
+	}
 }

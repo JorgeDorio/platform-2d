@@ -115,5 +115,5 @@ shape = SubResource("RectangleShape2D_qejfk")
 [node name="CoinObserver" type="VisibleOnScreenNotifier2D" parent="."]
 rect = Rect2(-5, -5, 10, 10)
 
-[connection signal="body_entered" from="." to="." method="OnBodyEntered"]
+[connection signal="area_entered" from="." to="." method="OnAreaEntered"]
 [connection signal="screen_exited" from="CoinObserver" to="." method="OnExitScreen"]

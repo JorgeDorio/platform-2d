@@ -1,8 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://bc34fqx8nh2s3"]
+[gd_scene load_steps=10 format=3 uid="uid://bc34fqx8nh2s3"]
 
 [ext_resource type="Texture2D" uid="uid://cwwpr301jtn77" path="res://assets/sprites/slime_green.png" id="1_bpl37"]
 [ext_resource type="Script" uid="uid://b5ot8x81c1tix" path="res://slime/Slime.cs" id="1_ms0tw"]
-[ext_resource type="Script" uid="uid://vx46we5l3fgd" path="res://slime/Hitbox.cs" id="3_feswj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ms0tw"]
 atlas = ExtResource("1_bpl37")
@@ -60,15 +59,14 @@ frame_progress = 0.70131963
 position = Vector2(0, 4.5)
 shape = SubResource("RectangleShape2D_gy7eu")
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="Hitbox" type="Area2D" parent="." groups=["enemy_hitbox"]]
+position = Vector2(4, 0)
 collision_layer = 8
 collision_mask = 18
-script = ExtResource("3_feswj")
 
 [node name="HitboxCollision" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(0, 4.5)
+position = Vector2(-4, 4.5)
 shape = SubResource("RectangleShape2D_ms0tw")
 debug_color = Color(0.6983468, 0.38931692, 0.7814856, 0.41960785)
 
-[connection signal="area_entered" from="Hitbox" to="." method="OnAreaEntered"]
-[connection signal="body_entered" from="Hitbox" to="." method="_on_body_entered"]
+[connection signal="body_entered" from="Hitbox" to="." method="OnBodyEntered"]

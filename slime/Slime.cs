@@ -14,6 +14,11 @@ public partial class Slime : CharacterBody2D
 		_slimeAnimation.Play("idle");
 	}
 
+	public void Die()
+	{
+		QueueFree();
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		Vector2 velocity = Velocity;
@@ -27,9 +32,8 @@ public partial class Slime : CharacterBody2D
 		MoveAndSlide();
 	}
 
-	private void _on_body_entered(Node2D body)
+	private void OnBodyEntered(Node2D body)
 	{
-		GD.Print("Entrou");
 		if (body.IsInGroup("player"))
 		{
 			body.CallDeferred("Die");
