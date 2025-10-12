@@ -74,11 +74,6 @@ public partial class Slime : CharacterBody2D
 		var distanceToPlayer = GlobalPosition.X - _player.GlobalPosition.X;
 		direction = distanceToPlayer <= 0 ? 1 : -1;
 		_slimeAnimation.FlipH = direction == -1;
-
-		if (Math.Abs(distanceToPlayer) > 180)
-		{
-			_state = SlimeState.PATROL;
-		}
 	}
 
 
@@ -88,6 +83,11 @@ public partial class Slime : CharacterBody2D
 		Velocity = Vector2.Zero;
 		_slimeAnimation.Play("die");
 		SetCollisionMaskValue(1, false);
+	}
+
+	public void OnAnimationFinished()
+	{
+		GD.Print("Animation finished!");
 	}
 
 	public override void _PhysicsProcess(double delta)
