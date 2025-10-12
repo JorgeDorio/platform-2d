@@ -1,7 +1,27 @@
-[gd_scene load_steps=10 format=3 uid="uid://bc34fqx8nh2s3"]
+[gd_scene load_steps=15 format=3 uid="uid://bc34fqx8nh2s3"]
 
 [ext_resource type="Texture2D" uid="uid://cwwpr301jtn77" path="res://assets/sprites/slime_green.png" id="1_bpl37"]
 [ext_resource type="Script" uid="uid://b5ot8x81c1tix" path="res://slime/Slime.cs" id="1_ms0tw"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfuky"]
+atlas = ExtResource("1_bpl37")
+region = Rect2(48, 48, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gy7eu"]
+atlas = ExtResource("1_bpl37")
+region = Rect2(72, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b8xnu"]
+atlas = ExtResource("1_bpl37")
+region = Rect2(48, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ol2ak"]
+atlas = ExtResource("1_bpl37")
+region = Rect2(24, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gru2r"]
+atlas = ExtResource("1_bpl37")
+region = Rect2(0, 0, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ms0tw"]
 atlas = ExtResource("1_bpl37")
@@ -21,6 +41,26 @@ region = Rect2(72, 24, 24, 24)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_nfuky"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfuky")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gy7eu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b8xnu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ol2ak")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gru2r")
+}],
+"loop": true,
+"name": &"die",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ms0tw")
@@ -45,15 +85,16 @@ size = Vector2(10, 15)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ms0tw"]
 size = Vector2(10, 15)
 
-[node name="Slime" type="CharacterBody2D" node_paths=PackedStringArray("_slimeAnimation")]
+[node name="Slime" type="CharacterBody2D" node_paths=PackedStringArray("_slimeAnimation", "_jumpTimer")]
 collision_layer = 4
 script = ExtResource("1_ms0tw")
 _slimeAnimation = NodePath("SlimeAnimation")
+_jumpTimer = NodePath("JumpTimer")
 
 [node name="SlimeAnimation" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_nfuky")
-animation = &"idle"
-frame_progress = 0.70131963
+animation = &"die"
+frame_progress = 0.582512
 
 [node name="SlimeCollision" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4.5)
@@ -69,4 +110,8 @@ position = Vector2(-4, 4.5)
 shape = SubResource("RectangleShape2D_ms0tw")
 debug_color = Color(0.6983468, 0.38931692, 0.7814856, 0.41960785)
 
+[node name="JumpTimer" type="Timer" parent="."]
+
+[connection signal="animation_finished" from="SlimeAnimation" to="." method="OnAnimationFinished"]
 [connection signal="body_entered" from="Hitbox" to="." method="OnBodyEntered"]
+[connection signal="timeout" from="JumpTimer" to="." method="_on_timer_timeout"]
