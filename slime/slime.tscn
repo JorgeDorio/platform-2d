@@ -1,8 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://bc34fqx8nh2s3"]
+[gd_scene load_steps=15 format=3 uid="uid://bc34fqx8nh2s3"]
 
 [ext_resource type="Texture2D" uid="uid://cwwpr301jtn77" path="res://assets/sprites/slime_green.png" id="1_bpl37"]
 [ext_resource type="Script" uid="uid://b5ot8x81c1tix" path="res://slime/Slime.cs" id="1_ms0tw"]
-[ext_resource type="Script" uid="uid://b3yqoer0sv7pi" path="res://slime/SlimeAnimation.cs" id="3_feswj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nfuky"]
 atlas = ExtResource("1_bpl37")
@@ -58,7 +57,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gru2r")
 }],
-"loop": true,
+"loop": false,
 "name": &"die",
 "speed": 5.0
 }, {
@@ -93,10 +92,11 @@ _slimeAnimation = NodePath("SlimeAnimation")
 _jumpTimer = NodePath("JumpTimer")
 
 [node name="SlimeAnimation" type="AnimatedSprite2D" parent="."]
+position = Vector2(1, 0)
 sprite_frames = SubResource("SpriteFrames_nfuky")
 animation = &"die"
-frame_progress = 0.87898284
-script = ExtResource("3_feswj")
+frame = 4
+frame_progress = 1.0
 
 [node name="SlimeCollision" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4.5)

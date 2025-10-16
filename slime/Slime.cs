@@ -33,6 +33,7 @@ public partial class Slime : CharacterBody2D
 	{
 		_targetPosition = _pointA;
 		_slimeAnimation.Play("idle");
+		_slimeAnimation.FlipH = true;
 	}
 
 	public void UpdatePatrolLogic()
@@ -82,17 +83,15 @@ public partial class Slime : CharacterBody2D
 		_state = SlimeState.DIE;
 		Velocity = Vector2.Zero;
 		_slimeAnimation.Play("die");
-		SetCollisionMaskValue(1, false);
 	}
 
 	public void OnAnimationFinished()
 	{
-		GD.Print("Animation finished!");
+		QueueFree();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (_state == SlimeState.DIE) return;
 
 		Vector2 velocity = Velocity;
 
@@ -102,7 +101,7 @@ public partial class Slime : CharacterBody2D
 		}
 		else
 		{
-			if (_canJump)
+			if (_canJump && _state != SlimeState.DIE)
 			{
 				if (_state == SlimeState.PATROL)
 				{
