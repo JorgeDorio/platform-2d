@@ -1,9 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://bc34fqx8nh2s3"]
+[gd_scene load_steps=16 format=3 uid="uid://bc34fqx8nh2s3"]
 
 [ext_resource type="Texture2D" uid="uid://cwwpr301jtn77" path="res://assets/sprites/slime_green.png" id="1_bpl37"]
 [ext_resource type="Script" uid="uid://b5ot8x81c1tix" path="res://slime/Slime.cs" id="1_ms0tw"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_nfuky"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_dqk0f"]
 atlas = ExtResource("1_bpl37")
 region = Rect2(48, 48, 24, 24)
 
@@ -22,6 +22,10 @@ region = Rect2(24, 0, 24, 24)
 [sub_resource type="AtlasTexture" id="AtlasTexture_gru2r"]
 atlas = ExtResource("1_bpl37")
 region = Rect2(0, 0, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfuky"]
+atlas = ExtResource("1_bpl37")
+region = Rect2(48, 48, 24, 24)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ms0tw"]
 atlas = ExtResource("1_bpl37")
@@ -43,7 +47,7 @@ region = Rect2(72, 24, 24, 24)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_nfuky")
+"texture": SubResource("AtlasTexture_dqk0f")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gy7eu")
@@ -59,6 +63,14 @@ animations = [{
 }],
 "loop": false,
 "name": &"die",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfuky")
+}],
+"loop": false,
+"name": &"hit",
 "speed": 5.0
 }, {
 "frames": [{
@@ -95,8 +107,6 @@ _jumpTimer = NodePath("JumpTimer")
 position = Vector2(1, 0)
 sprite_frames = SubResource("SpriteFrames_nfuky")
 animation = &"die"
-frame = 4
-frame_progress = 1.0
 
 [node name="SlimeCollision" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4.5)

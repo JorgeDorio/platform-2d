@@ -28,6 +28,7 @@ public partial class Slime : CharacterBody2D
 	private Marker2D _targetPosition;
 	private float direction = -1;
 	private bool _canJump = false;
+	private int _health = 3;
 
 	public override void _Ready()
 	{
@@ -78,16 +79,37 @@ public partial class Slime : CharacterBody2D
 	}
 
 
-	public void Die()
+	public void Die(float hitDirection)
 	{
-		_state = SlimeState.DIE;
-		Velocity = Vector2.Zero;
-		_slimeAnimation.Play("die");
+		if (_state == SlimeState.DIE) return;
+
+		_health--;
+
+		Vector2 hitVelocity = Velocity;
+		hitVelocity.X = hitDirection * JumpHorizontalSpeed * 1.5f;
+		hitVelocity.Y = JumpVelocity * 1.2f;
+		Velocity = hitVelocity;
+
+		_canJump = false;
+		_jumpTimer.Stop();
+
+		if (_health <= 0)
+		{
+			_state = SlimeState.DIE;
+			_slimeAnimation.Play("die");
+		}
+		else
+		{
+			_slimeAnimation.Play("hit");
+		}
 	}
 
 	public void OnAnimationFinished()
 	{
-		QueueFree();
+		if (_state == SlimeState.DIE)
+		{
+			QueueFree();
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -101,30 +123,37 @@ public partial class Slime : CharacterBody2D
 		}
 		else
 		{
-			if (_canJump && _state != SlimeState.DIE)
+			if (velocity.Y >= 0)
 			{
-				if (_state == SlimeState.PATROL)
+				if (_state == SlimeState.DIE)
 				{
-					UpdatePatrolLogic();
+					velocity.X = 0;
 				}
-				else if (_state == SlimeState.CHASE)
+				else if (_canJump)
 				{
-					UpdateChaseLogic();
+					if (_state == SlimeState.PATROL)
+					{
+						UpdatePatrolLogic();
+					}
+					else if (_state == SlimeState.CHASE)
+					{
+						UpdateChaseLogic();
+					}
+
+					velocity.Y = JumpVelocity;
+					velocity.X = direction * JumpHorizontalSpeed;
+
+					_canJump = false;
 				}
-
-				velocity.Y = JumpVelocity;
-				velocity.X = direction * JumpHorizontalSpeed;
-
-				_canJump = false;
-			}
-			else
-			{
-				velocity.X = 0;
-
-				if (_jumpTimer.IsStopped())
+				else
 				{
-					_slimeAnimation.Play("idle");
-					_jumpTimer.Start();
+					velocity.X = 0;
+
+					if (_jumpTimer.IsStopped() && _state != SlimeState.DIE)
+					{
+						_slimeAnimation.Play("idle");
+						_jumpTimer.Start();
+					}
 				}
 			}
 		}
@@ -135,7 +164,10 @@ public partial class Slime : CharacterBody2D
 
 	private void _on_timer_timeout()
 	{
-		_canJump = true;
+		if (_state != SlimeState.DIE)
+		{
+			_canJump = true;
+		}
 	}
 
 	private void OnBodyEntered(Node2D body)

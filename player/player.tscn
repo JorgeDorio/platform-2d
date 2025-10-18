@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://d0d3ltflnild1"]
+[gd_scene load_steps=48 format=3 uid="uid://d0d3ltflnild1"]
 
 [ext_resource type="Script" uid="uid://jbf7kf1hkp5w" path="res://player/Player.cs" id="1_rkbax"]
 [ext_resource type="PackedScene" uid="uid://bqlcdphf0qg5" path="res://components/coin/coin.tscn" id="2_g1dw6"]
@@ -9,6 +9,10 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qjkh3"]
 radius = 6.5
 height = 33.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g6k8r"]
+radius = 5.6439123
+height = 31.295034
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x7c3f"]
 atlas = ExtResource("3_qjkh3")
@@ -259,26 +263,283 @@ animations = [{
 "speed": 24.0
 }]
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_playerAnimation", "_shootPosition") groups=["player"]]
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_boad6"]
+points = PackedVector2Array(39, -16, 31, -32, -16, -31, 0, 0)
+
+[sub_resource type="Animation" id="Animation_g6k8r"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerAnimation:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PlayerAnimation/CollisionAttackArea/CollisionAttack:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CollisionWalk:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_rgyib"]
+resource_name = "attack"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerAnimation:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"attack"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PlayerAnimation:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(-0.033333335, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("PlayerAnimation/CollisionAttackArea/CollisionAttack:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CollisionWalk:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CollisionIdle:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_qjkh3"]
+resource_name = "idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerAnimation:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"idle"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PlayerAnimation:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CollisionWalk:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CollisionIdle:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("PlayerAnimation/CollisionAttackArea/CollisionAttack:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_boad6"]
+resource_name = "walk"
+length = 1.5333
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerAnimation:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"walk"]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PlayerAnimation:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CollisionWalk:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CollisionIdle:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_g6k8r"]
+_data = {
+&"RESET": SubResource("Animation_g6k8r"),
+&"attack": SubResource("Animation_rgyib"),
+&"idle": SubResource("Animation_qjkh3"),
+&"walk": SubResource("Animation_boad6")
+}
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("_playerAnimation", "_playerAnimator", "_shootPosition", "_collisionWalk", "_collisionAttack") groups=["player"]]
 collision_layer = 2
 collision_mask = 9
 script = ExtResource("1_rkbax")
 _playerAnimation = NodePath("PlayerAnimation")
+_playerAnimator = NodePath("AnimationPlayer")
 _projectile = ExtResource("2_g1dw6")
 _shootPosition = NodePath("ShootPosition")
+_collisionWalk = NodePath("CollisionWalk")
+_collisionAttack = NodePath("PlayerAnimation/CollisionAttackArea/CollisionAttack")
 
-[node name="PlayerCollision" type="CollisionShape2D" parent="." groups=["player"]]
-position = Vector2(-0.5, 1.5)
+[node name="CollisionIdle" type="CollisionShape2D" parent="." groups=["player"]]
+position = Vector2(0.5, -16.5)
 shape = SubResource("CapsuleShape2D_qjkh3")
+debug_color = Color(0.85017866, 0.37361425, 0, 0.41960785)
 
-[node name="PlayerAnimation" type="AnimatedSprite2D" parent="." groups=["player"]]
-position = Vector2(-2, -15)
-sprite_frames = SubResource("SpriteFrames_fjrip")
-animation = &"attack"
-frame_progress = 0.90826577
+[node name="CollisionWalk" type="CollisionShape2D" parent="."]
+position = Vector2(6.000001, -15)
+rotation = 0.4384777
+shape = SubResource("CapsuleShape2D_g6k8r")
+debug_color = Color(0.8509804, 0.37254903, 0, 0.41960785)
 
 [node name="PlayerCamera" type="Camera2D" parent="." groups=["player"]]
 zoom = Vector2(1.5, 1.5)
 
 [node name="ShootPosition" type="Marker2D" parent="."]
-position = Vector2(6, 2)
+position = Vector2(6, -19)
+
+[node name="PlayerAnimation" type="AnimatedSprite2D" parent="." groups=["player"]]
+position = Vector2(-1, -33)
+sprite_frames = SubResource("SpriteFrames_fjrip")
+animation = &"idle"
+frame = 1
+
+[node name="CollisionAttackArea" type="Area2D" parent="PlayerAnimation"]
+position = Vector2(1, 0)
+collision_layer = 16
+collision_mask = 12
+
+[node name="CollisionAttack" type="CollisionShape2D" parent="PlayerAnimation/CollisionAttackArea"]
+position = Vector2(6, 34)
+shape = SubResource("ConvexPolygonShape2D_boad6")
+debug_color = Color(1.4920532e-06, 0.6398409, 0.3633656, 0.41960785)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_g6k8r")
+}
+
+[connection signal="area_entered" from="PlayerAnimation/CollisionAttackArea" to="." method="OnHitEnemy"]

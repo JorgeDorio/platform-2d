@@ -6,54 +6,65 @@ public partial class Player : CharacterBody2D
 	[Export]
 	public AnimatedSprite2D _playerAnimation;
 	[Export]
+	public AnimationPlayer _playerAnimator;
+	[Export]
 	public PackedScene _projectile;
 	[Export]
 	public Marker2D _shootPosition;
 
+	[Export]
+	public CollisionShape2D _collisionWalk;
+	[Export]
+	public CollisionShape2D _collisionAttack;
+
 	public const float Speed = 300.0f;
 	public const float JumpVelocity = -400.0f;
+
 	private float _direction = 1;
 	private bool _isAttacking = false;
 
+	private float _originalWalkPosX;
+	private float _originalWalkRotation;
+	private float _originalAttackPosX;
+	private float _originalShootPosX;
+	private float _originalAttackRotation;
+
 	public override void _Ready()
 	{
-		_playerAnimation.Connect(AnimatedSprite2D.SignalName.AnimationFinished, new Callable(this, nameof(OnAnimationFinished)));
+		_playerAnimator.Connect(AnimationMixer.SignalName.AnimationFinished, new Callable(this, nameof(OnAnimationFinished)));
+
+		_originalWalkPosX = Math.Abs(_collisionWalk.Position.X);
+		_originalWalkRotation = Math.Abs(_collisionWalk.Rotation);
+		_originalAttackPosX = Math.Abs(_collisionAttack.Position.X);
+		_originalShootPosX = Math.Abs(_shootPosition.Position.X);
+		_originalAttackRotation = Math.Abs(_collisionAttack.Rotation);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		Vector2 velocity = Velocity;
 
-		// Aplica a gravidade (isso acontece independentemente de estar atacando ou não)
 		if (!IsOnFloor())
 		{
 			velocity.Y += GetGravity().Y * (float)delta;
 		}
 
-		// Verifica o input de ataque primeiro
 		if (Input.IsActionJustPressed("attack") && !_isAttacking && IsOnFloor())
 		{
 			Attack();
 		}
 
-		// **LÓGICA PRINCIPAL: Decide o que fazer baseado no estado _isAttacking**
 		if (_isAttacking)
 		{
-			// Se está atacando, a velocidade horizontal deve ir para zero.
-			// Usar MoveToward cria uma parada suave em vez de um corte brusco.
 			velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
 		}
 		else
 		{
-			// Se NÃO está atacando, processa os inputs de movimento normalmente.
-
-			// Pulo
 			if (Input.IsActionJustPressed("ui_accept") && IsOnFloor())
 			{
 				velocity.Y = JumpVelocity;
 			}
 
-			// Movimento Horizontal
 			Vector2 inputDirection = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
 			if (inputDirection.X != 0)
 			{
@@ -66,74 +77,93 @@ public partial class Player : CharacterBody2D
 			}
 		}
 
-		// Atualiza a direção do sprite e do ponto de tiro (sempre)
-		_playerAnimation.FlipH = _direction < 0;
-		Vector2 shootPos = _shootPosition.Position;
-		shootPos.X = Math.Abs(shootPos.X) * _direction;
-		_shootPosition.Position = shootPos;
+		UpdateFlip();
 
-		// Lógica de tiro (pode acontecer mesmo parado)
 		if (Input.IsActionJustPressed("ui_fire"))
 		{
 			Shoot();
 		}
 
-		// Aplica a velocidade, animações e movimento
 		Velocity = velocity;
 		AnimationHandler();
 		MoveAndSlide();
 	}
 
+	private void UpdateFlip()
+	{
+		_playerAnimation.FlipH = _direction < 0;
+
+		Vector2 shootPos = _shootPosition.Position;
+		shootPos.X = _originalShootPosX * _direction;
+		_shootPosition.Position = shootPos;
+
+		Vector2 walkPos = _collisionWalk.Position;
+		walkPos.X = _originalWalkPosX * _direction;
+		_collisionWalk.Position = walkPos;
+		_collisionWalk.Rotation = _originalWalkRotation * _direction;
+
+		Vector2 attackPos = _collisionAttack.Position;
+		attackPos.X = _originalAttackPosX * _direction;
+		_collisionAttack.Position = attackPos;
+		_collisionAttack.Scale = new Vector2(_direction, 1);
+	}
+
 	public void Attack()
 	{
 		_isAttacking = true;
-		// Não é mais necessário zerar a velocidade aqui, pois o _PhysicsProcess já cuida disso.
 	}
 
-	public void OnAnimationFinished()
+	public void OnAnimationFinished(StringName animName)
 	{
-		if (_playerAnimation.Animation == "attack")
+		if (animName == "attack")
 		{
 			_isAttacking = false;
 		}
+	}
+
+	public void OnHitEnemy(Area2D area)
+	{
+		area.GetParent().CallDeferred("Die", _direction);
 	}
 
 	public void AnimationHandler()
 	{
 		string newAnim = "idle";
 
-		// A lógica de animação é a última coisa a ser decidida, baseada no estado final
 		if (_isAttacking)
 		{
 			newAnim = "attack";
 		}
 		else if (!IsOnFloor())
 		{
-			newAnim = "jump"; // Sugestão: adicione uma animação de pulo
 		}
 		else if (Velocity.X != 0)
 		{
 			newAnim = "walk";
 		}
 
-		if (_playerAnimation.Animation != newAnim)
+		if (_playerAnimator.CurrentAnimation != newAnim)
 		{
-			_playerAnimation.Play(newAnim);
+			_playerAnimator.Play(newAnim);
 		}
-	}
-
-	public void Die()
-	{
-		QueueFree();
 	}
 
 	private void Shoot()
 	{
 		if (_projectile == null || _shootPosition == null) return;
 
-		var projectileInstance = _projectile.Instantiate<Coin>();
-		projectileInstance.Direction = _direction;
+		var projectileInstance = _projectile.Instantiate<Node2D>();
+
+		if (projectileInstance.HasMethod("SetDirection"))
+		{
+			projectileInstance.Call("SetDirection", _direction);
+		}
+
 		projectileInstance.GlobalPosition = _shootPosition.GlobalPosition;
 		GetTree().Root.AddChild(projectileInstance);
+	}
+
+	public void Die()
+	{
 	}
 }
